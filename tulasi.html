@@ -1,0 +1,31 @@
+server {
+        root /var/www/html;      
+        index index.html index.htm index.nginx-debian.html;
+        server_name auroraspotter.space;
+         
+location / {
+       proxy_set_header X-Real-IP $remote_addr;
+       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+       proxy_set_header X-NginX-Proxy true;
+       proxy_pass http://localhost:8080;
+       proxy_set_header Host $http_host;
+       proxy_cache_bypass $http_upgrade;
+       proxy_redirect off;
+ }
+    listen [::]:443 ssl ipv6only=on; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/auroraspotter.space/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/auroraspotter.space/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+server {
+    if ($host = auroraspotter.space) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+    
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        
+        server_name auroraspotter.space;
+    return 404; # managed by Certbot
